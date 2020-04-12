@@ -14,6 +14,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     var markerNodes = [SCNNode]()
+    var textNode = SCNNode()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,6 +73,34 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let endPosition = SCNVector3ToGLKVector3(end.worldPosition)
         
         let distance = GLKVector3Distance(startPosition, endPosition)
-        print(distance)
+        let sum = GLKVector3Add(startPosition, endPosition)
+        let midpoint = SCNVector3(sum.x / 2, sum.y / 2, sum.z / 2)
+        
+        addText(text: metersToInches(meters: distance), location: midpoint)
+    }
+    
+    func addText(text: String, location: SCNVector3) {
+        let text = SCNText(string: text, extrusionDepth: 0.1)
+        text.font = UIFont(name: "futura", size: 16)
+        text.flatness = 0
+        let scaleFactor = 0.05 / text.font.pointSize
+        
+        textNode.geometry = text
+        textNode.scale = SCNVector3(scaleFactor, scaleFactor, scaleFactor)
+        
+        let (min, max) = textNode.boundingBox
+        let offset = (max.x - min.x) / 2 * Float(scaleFactor)
+        let textPosition = SCNVector3(location.x - offset, location.y + 0.05, location.z)
+        
+        textNode.position = textPosition
+        sceneView.scene.rootNode.addChildNode(textNode)
+    }
+    
+    func metersToInches(meters: Float) -> String {
+        let measurement = Measurement(value: Double(meters), unit: UnitLength.meters)
+        let inches = measurement.converted(to: .inches)
+        
+        let inchString = String(format: "%.2f", inches.value)
+        return inchString
     }
 }

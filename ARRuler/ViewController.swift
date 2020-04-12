@@ -85,6 +85,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         text.flatness = 0
         let scaleFactor = 0.05 / text.font.pointSize
         
+        let constraint = SCNBillboardConstraint()
+        textNode.constraints = [constraint]
+        
         textNode.geometry = text
         textNode.scale = SCNVector3(scaleFactor, scaleFactor, scaleFactor)
         

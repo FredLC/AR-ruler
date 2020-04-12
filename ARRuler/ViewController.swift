@@ -58,6 +58,20 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         if markerNodes.count > 2 {
             markerNodes.first?.removeFromParentNode()
             markerNodes.remove(at: 0)
+            calculate()
+        } else if markerNodes.count == 2 {
+            calculate()
         }
+    }
+    
+    func calculate() {
+        let start = markerNodes[0]
+        let end = markerNodes[1]
+        
+        let startPosition = SCNVector3ToGLKVector3(start.worldPosition)
+        let endPosition = SCNVector3ToGLKVector3(end.worldPosition)
+        
+        let distance = GLKVector3Distance(startPosition, endPosition)
+        print(distance)
     }
 }
